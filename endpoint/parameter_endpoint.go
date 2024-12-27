@@ -13,10 +13,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-const PARAMETERS = "/api/parameters"
+const PARAMETERS = constant.PREFIX_API + "/parameters"
 const PARAMETERS_PARAMETER = PARAMETERS + "/parameter/:" + constant.PARAMETER_ID
 
-func SetCountryEndpoint(router *httprouter.Router, db *sql.DB, validate *validator.Validate) {
+func SetParameterEndpoint(router *httprouter.Router, db *sql.DB, validate *validator.Validate) {
 	parameterController := getParameterController(db, validate)
 	router.POST(PARAMETERS, parameterController.Create)
 	router.PUT(PARAMETERS_PARAMETER, parameterController.Update)
