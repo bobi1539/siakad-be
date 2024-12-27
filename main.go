@@ -5,6 +5,7 @@ import (
 	"os"
 	"siakad/app"
 	"siakad/constant"
+	_ "siakad/docs"
 	"siakad/endpoint"
 	"siakad/exception"
 	"siakad/helper"
@@ -14,11 +15,21 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+//	@title			SIAKAD API
+//	@version		1.0
+//	@description	This is a siakad api service.
+//	@termsOfService	http://swagger.io/terms/
+
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+
+//	@BasePath	/api
 func main() {
 	db := app.NewDB()
 	validate := validator.New()
 	router := httprouter.New()
 
+	endpoint.SetSwaggerEndpoint(router)
 	endpoint.SetParameterEndpoint(router, db, validate)
 	router.PanicHandler = exception.ErrorHandler
 

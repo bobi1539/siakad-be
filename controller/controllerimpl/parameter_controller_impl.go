@@ -21,25 +21,50 @@ func NewParameterController(parameterService service.ParameterService) controlle
 	}
 }
 
+// @Tags		Parameter
+// @Accept	json
+// @Produce	json
+// @Param		request	body		request.ParameterRequest	true	"Request body"
+// @Success	200		{object}	response.WebResponse{data=response.ParameterResponse}
+// @Failure	400		{object}	response.WebResponse
+// @Failure	500		{object}	response.WebResponse
+// @Router	/parameters [post]
 func (parameterController *ParameterControllerImpl) Create(writer http.ResponseWriter, httpRequest *http.Request, params httprouter.Params) {
 	parameterRequest := request.ParameterRequest{}
 	helper.ReadFromRequestBody(httpRequest, &parameterRequest)
 
 	parameterResponse := parameterController.ParameterService.Create(httpRequest.Context(), parameterRequest)
-	helper.WriteToResponseBody(writer, parameterResponse)
+	helper.WriteSuccessResponse(writer, parameterResponse)
 }
 
+// @Tags		Parameter
+// @Accept	json
+// @Produce	json
+// @Param		id	path		int	true	"id"
+// @Param		request	body		request.ParameterRequest	true	"Request body"
+// @Success	200		{object}	response.WebResponse{data=response.ParameterResponse}
+// @Failure	400		{object}	response.WebResponse
+// @Failure	500		{object}	response.WebResponse
+// @Router	/parameters/parameter/{id} [put]
 func (parameterController *ParameterControllerImpl) Update(writer http.ResponseWriter, httpRequest *http.Request, params httprouter.Params) {
 	parameterRequest := request.ParameterRequest{}
 	helper.ReadFromRequestBody(httpRequest, &parameterRequest)
 
 	id := helper.GetIdFromPath(params, constant.PARAMETER_ID)
 	parameterResponse := parameterController.ParameterService.Update(httpRequest.Context(), id, parameterRequest)
-	helper.WriteToResponseBody(writer, parameterResponse)
+	helper.WriteSuccessResponse(writer, parameterResponse)
 }
 
+// @Tags		Parameter
+// @Accept	json
+// @Produce	json
+// @Param		id	path		int	true	"id"
+// @Success	200	{object}	response.WebResponse{data=response.ParameterResponse}
+// @Failure	400	{object}	response.WebResponse
+// @Failure	500	{object}	response.WebResponse
+// @Router	/parameters/parameter/{id} [get]
 func (parameterController *ParameterControllerImpl) FindById(writer http.ResponseWriter, httpRequest *http.Request, params httprouter.Params) {
 	id := helper.GetIdFromPath(params, constant.PARAMETER_ID)
 	parameterResponse := parameterController.ParameterService.FindById(httpRequest.Context(), id)
-	helper.WriteToResponseBody(writer, parameterResponse)
+	helper.WriteSuccessResponse(writer, parameterResponse)
 }
