@@ -22,6 +22,9 @@ func main() {
 	endpoint.SetParameterEndpoint(router, db, validate)
 	router.PanicHandler = exception.ErrorHandler
 
+	log := helper.GetLogger()
+	log.Info("Start siakad application")
+
 	runServer(router)
 }
 
