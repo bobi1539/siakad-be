@@ -7,6 +7,7 @@ import (
 	"siakad/controller/controllerimpl"
 	"siakad/repository"
 	"siakad/repository/repositoryimpl"
+	"siakad/service"
 	"siakad/service/serviceimpl"
 
 	"github.com/go-playground/validator/v10"
@@ -26,8 +27,13 @@ func SetParameterListEndpoint(router *httprouter.Router, db *sql.DB, validate *v
 }
 
 func getParameterListController(db *sql.DB, validate *validator.Validate) controller.ParameterListController {
-	parameterListService := serviceimpl.NewParameterListService(getParameterListRepository(), db, validate)
-	return controllerimpl.NewParameterListController(parameterListService)
+	return controllerimpl.NewParameterListController(getParameterListService(db, validate))
+}
+
+func getParameterListService(db *sql.DB, validate *validator.Validate) service.ParameterListService {
+	parameterListRepository := getParameterListRepository()
+	parameterService := getParameterService(db, validate)
+	return serviceimpl.NewParameterListService(parameterListRepository, parameterService, db, validate)
 }
 
 func getParameterListRepository() repository.ParameterListRepository {

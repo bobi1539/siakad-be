@@ -486,13 +486,17 @@ const docTemplate = `{
         "request.ParameterListRequest": {
             "type": "object",
             "required": [
-                "name"
+                "name",
+                "parameterId"
             ],
             "properties": {
                 "name": {
                     "type": "string",
                     "maxLength": 255,
                     "minLength": 1
+                },
+                "parameterId": {
+                    "type": "integer"
                 }
             }
         },

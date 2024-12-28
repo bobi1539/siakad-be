@@ -6,8 +6,11 @@ definitions:
         maxLength: 255
         minLength: 1
         type: string
+      parameterId:
+        type: integer
     required:
     - name
+    - parameterId
     type: object
   request.ParameterRequest:
     properties:

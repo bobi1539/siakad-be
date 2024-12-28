@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"siakad/model/domain"
 	"siakad/model/search"
 	"siakad/model/web/request"
 	"siakad/model/web/response"
@@ -12,4 +13,5 @@ type ParameterService interface {
 	Update(ctx context.Context, id int64, parameterRequest request.ParameterRequest) response.ParameterResponse
 	FindById(ctx context.Context, id int64) response.ParameterResponse
 	FindAll(ctx context.Context, generalSearch search.GeneralSearch) []response.ParameterResponse
+	FindByIdDomain(ctx context.Context, id int64) domain.Parameter
 }

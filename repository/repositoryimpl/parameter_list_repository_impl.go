@@ -20,7 +20,7 @@ func NewParameterListRepository() repository.ParameterListRepository {
 }
 
 func (parameterListRepository *ParameterListRepositoryImpl) Save(repoCtx dto.RepositoryContext, parameterList domain.ParameterList) domain.ParameterList {
-	result, err := repoCtx.Tx.ExecContext(repoCtx.Ctx, sqlSaveParameterList(), parameterList.Name)
+	result, err := repoCtx.Tx.ExecContext(repoCtx.Ctx, sqlSaveParameterList(), parameterList.Name, parameterList.Parameter.Id)
 	helper.PanicIfError(err)
 
 	id, err := result.LastInsertId()
@@ -31,7 +31,7 @@ func (parameterListRepository *ParameterListRepositoryImpl) Save(repoCtx dto.Rep
 }
 
 func (parameterListRepository *ParameterListRepositoryImpl) Update(repoCtx dto.RepositoryContext, parameterList domain.ParameterList) domain.ParameterList {
-	_, err := repoCtx.Tx.ExecContext(repoCtx.Ctx, sqlUpdateParameterList(), parameterList.Name, parameterList.Id)
+	_, err := repoCtx.Tx.ExecContext(repoCtx.Ctx, sqlUpdateParameterList(), parameterList.Name, parameterList.Parameter.Id, parameterList.Id)
 	helper.PanicIfError(err)
 
 	return parameterList
@@ -63,14 +63,16 @@ func (parameterListRepository *ParameterListRepositoryImpl) FindAll(repoCtx dto.
 
 func sqlSaveParameterList() string {
 	return "INSERT INTO m_parameter_list(" +
-		"name " +
+		"name, " +
+		"parameter_id " +
 		") " +
 		"VALUES (?,?)"
 }
 
 func sqlUpdateParameterList() string {
 	return "UPDATE m_parameter_list SET " +
-		"name = ? " +
+		"name = ?, " +
+		"parameter_id = ? " +
 		"WHERE id = ?"
 }
 

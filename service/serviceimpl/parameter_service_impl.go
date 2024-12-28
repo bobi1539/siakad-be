@@ -36,11 +36,10 @@ func (parameterService *ParameterServiceImpl) Create(ctx context.Context, parame
 	tx := service.BeginTransaction(parameterService.DB)
 	defer helper.CommitOrRollback(tx)
 
+	parameter := domain.Parameter{}
+	parameterService.setParameter(&parameter, &parameterRequest)
+
 	repoCtx := dto.BuildRepoCtx(ctx, tx)
-	parameter := domain.Parameter{
-		Name:        parameterRequest.Name,
-		Description: parameterRequest.Description,
-	}
 	parameter = parameterService.ParameterRepository.Save(repoCtx, parameter)
 	return response.ToParameterResponse(parameter)
 }
@@ -51,21 +50,16 @@ func (parameterService *ParameterServiceImpl) Update(ctx context.Context, id int
 	tx := service.BeginTransaction(parameterService.DB)
 	defer helper.CommitOrRollback(tx)
 
-	repoCtx := dto.BuildRepoCtx(ctx, tx)
-	parameter := parameterService.findParameterById(repoCtx, id)
-	parameter.Name = parameterRequest.Name
-	parameter.Description = parameterRequest.Description
+	parameter := parameterService.FindByIdDomain(ctx, id)
+	parameterService.setParameter(&parameter, &parameterRequest)
 
+	repoCtx := dto.BuildRepoCtx(ctx, tx)
 	parameter = parameterService.ParameterRepository.Update(repoCtx, parameter)
 	return response.ToParameterResponse(parameter)
 }
 
 func (parameterService *ParameterServiceImpl) FindById(ctx context.Context, id int64) response.ParameterResponse {
-	tx := service.BeginTransaction(parameterService.DB)
-	defer helper.CommitOrRollback(tx)
-
-	repoCtx := dto.BuildRepoCtx(ctx, tx)
-	parameter := parameterService.findParameterById(repoCtx, id)
+	parameter := parameterService.FindByIdDomain(ctx, id)
 	return response.ToParameterResponse(parameter)
 }
 
@@ -78,13 +72,22 @@ func (parameterService *ParameterServiceImpl) FindAll(ctx context.Context, gener
 	return response.ToParameterResponses(parameters)
 }
 
+func (parameterService *ParameterServiceImpl) FindByIdDomain(ctx context.Context, id int64) domain.Parameter {
+	tx := service.BeginTransaction(parameterService.DB)
+	defer helper.CommitOrRollback(tx)
+
+	repoCtx := dto.BuildRepoCtx(ctx, tx)
+	parameter, err := parameterService.ParameterRepository.FindById(repoCtx, id)
+	exception.PanicErrorBadRequest(err)
+	return parameter
+}
+
 func (parameterService *ParameterServiceImpl) validateRequest(parameterRequest request.ParameterRequest) {
 	err := parameterService.validate.Struct(parameterRequest)
 	helper.PanicIfError(err)
 }
 
-func (parameterService *ParameterServiceImpl) findParameterById(repoCtx dto.RepositoryContext, id int64) domain.Parameter {
-	parameter, err := parameterService.ParameterRepository.FindById(repoCtx, id)
-	exception.PanicErrorBadRequest(err)
-	return parameter
+func (parameterService *ParameterServiceImpl) setParameter(parameter *domain.Parameter, parameterRequest *request.ParameterRequest) {
+	parameter.Name = parameterRequest.Name
+	parameter.Description = parameterRequest.Description
 }
