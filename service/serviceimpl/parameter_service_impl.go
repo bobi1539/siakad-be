@@ -7,6 +7,7 @@ import (
 	"siakad/helper"
 	"siakad/model/domain"
 	"siakad/model/dto"
+	"siakad/model/search"
 	"siakad/model/web/request"
 	"siakad/model/web/response"
 	"siakad/repository"
@@ -67,6 +68,15 @@ func (parameterService *ParameterServiceImpl) FindById(ctx context.Context, id i
 	repoCtx := dto.BuildRepoCtx(ctx, tx)
 	parameter := parameterService.findParameterById(repoCtx, id)
 	return response.ToParameterResponse(parameter)
+}
+
+func (parameterService *ParameterServiceImpl) FindAll(ctx context.Context, generalSearch search.GeneralSearch) []response.ParameterResponse {
+	tx := service.BeginTransaction(parameterService.DB)
+	defer helper.CommitOrRollback(tx)
+
+	repoCtx := dto.BuildRepoCtx(ctx, tx)
+	parameters := parameterService.ParameterRepository.FindAll(repoCtx, generalSearch)
+	return response.ToParameterResponses(parameters)
 }
 
 func (parameterService *ParameterServiceImpl) validateRequest(parameterRequest request.ParameterRequest) {

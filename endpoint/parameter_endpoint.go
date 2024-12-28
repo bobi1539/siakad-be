@@ -21,6 +21,7 @@ func SetParameterEndpoint(router *httprouter.Router, db *sql.DB, validate *valid
 	router.POST(PARAMETERS, parameterController.Create)
 	router.PUT(PARAMETERS_PARAMETER, parameterController.Update)
 	router.GET(PARAMETERS_PARAMETER, parameterController.FindById)
+	router.GET(PARAMETERS, parameterController.FindAll)
 }
 
 func getParameterController(db *sql.DB, validate *validator.Validate) controller.ParameterController {

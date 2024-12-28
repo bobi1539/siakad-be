@@ -8,6 +8,7 @@ import (
 	"siakad/helper"
 	"siakad/model/domain"
 	"siakad/model/dto"
+	"siakad/model/search"
 	"siakad/repository"
 )
 
@@ -51,6 +52,19 @@ func (parameterRepository *ParameterRepositoryImpl) FindById(repoCtx dto.Reposit
 	return parameter, errors.New(constant.DATA_NOT_FOUND)
 }
 
+func (parameterRepository *ParameterRepositoryImpl) FindAll(repoCtx dto.RepositoryContext, generalSearch search.GeneralSearch) []domain.Parameter {
+	sqlSearch, args := sqlSearch(generalSearch.Search)
+	sqlQuery := sqlSelect() + sqlSearch
+
+	fmt.Println("sql query : ", sqlQuery)
+	fmt.Println("args : ", args)
+
+	rows := repository.FetchRows(repoCtx, sqlQuery, args...)
+	defer rows.Close()
+
+	return getParameters(rows)
+}
+
 func sqlSave() string {
 	return "INSERT INTO m_parameter(" +
 		"name, " +
@@ -75,6 +89,20 @@ func sqlSelect() string {
 		"WHERE 1 = 1 "
 }
 
+func sqlSearch(search string) (string, []any) {
+	var args []any
+	sqlQuery := ""
+
+	if len(search) != 0 {
+		sqlQuery += " AND (LOWER(name) LIKE ? OR LOWER(description) LIKE ?)"
+		searchLike := helper.StringQueryLike(search)
+		args = append(args, searchLike, searchLike)
+	}
+
+	sqlQuery += " ORDER BY id ASC"
+	return sqlQuery, args
+}
+
 func scanParameter(rows *sql.Rows, parameter *domain.Parameter) {
 	err := rows.Scan(
 		&parameter.Id,
@@ -82,4 +110,14 @@ func scanParameter(rows *sql.Rows, parameter *domain.Parameter) {
 		&parameter.Description,
 	)
 	helper.PanicIfError(err)
+}
+
+func getParameters(rows *sql.Rows) []domain.Parameter {
+	var parameters []domain.Parameter
+	for rows.Next() {
+		parameter := domain.Parameter{}
+		scanParameter(rows, &parameter)
+		parameters = append(parameters, parameter)
+	}
+	return parameters
 }

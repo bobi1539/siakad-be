@@ -5,6 +5,7 @@ import (
 	"siakad/constant"
 	"siakad/controller"
 	"siakad/helper"
+	"siakad/model/search"
 	"siakad/model/web/request"
 	"siakad/service"
 
@@ -67,4 +68,22 @@ func (parameterController *ParameterControllerImpl) FindById(writer http.Respons
 	id := helper.GetIdFromPath(params, constant.PARAMETER_ID)
 	parameterResponse := parameterController.ParameterService.FindById(httpRequest.Context(), id)
 	helper.WriteSuccessResponse(writer, parameterResponse)
+}
+
+// @Tags		Parameter
+// @Accept	json
+// @Produce	json
+// @Param   search  query   string  false  "Search"
+// @Success	200	{object}	response.WebResponse{data=[]response.ParameterResponse}
+// @Failure	400	{object}	response.WebResponse
+// @Failure	500	{object}	response.WebResponse
+// @Router	/parameters [get]
+func (parameterController *ParameterControllerImpl) FindAll(writer http.ResponseWriter, httpRequest *http.Request, params httprouter.Params) {
+	generalSearch := search.GeneralSearch{
+		Search:   helper.GetQueryParam(httpRequest, constant.SEARCH),
+		PageSize: search.BuildPageSize(0, 0),
+	}
+
+	parameterResponses := parameterController.ParameterService.FindAll(httpRequest.Context(), generalSearch)
+	helper.WriteSuccessResponse(writer, parameterResponses)
 }

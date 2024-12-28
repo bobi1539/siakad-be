@@ -1,6 +1,11 @@
 package helper
 
-import "github.com/sirupsen/logrus"
+import (
+	"strconv"
+	"strings"
+
+	"github.com/sirupsen/logrus"
+)
 
 var logger *logrus.Logger
 
@@ -9,4 +14,14 @@ func GetLogger() *logrus.Logger {
 		logger = logrus.New()
 	}
 	return logger
+}
+
+func StringQueryLike(value string) string {
+	return "%" + strings.ToLower(value) + "%"
+}
+
+func StringToInt(value string) int {
+	intValue, err := strconv.Atoi(value)
+	PanicIfError(err)
+	return intValue
 }

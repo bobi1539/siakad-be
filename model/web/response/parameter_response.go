@@ -15,3 +15,15 @@ func ToParameterResponse(parameter domain.Parameter) ParameterResponse {
 		Description: parameter.Description,
 	}
 }
+
+func ToParameterResponses(parameters []domain.Parameter) []ParameterResponse {
+	if parameters == nil {
+		return make([]ParameterResponse, 0)
+	}
+
+	var responses []ParameterResponse
+	for _, parameter := range parameters {
+		responses = append(responses, ToParameterResponse(parameter))
+	}
+	return responses
+}
