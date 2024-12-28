@@ -15,13 +15,14 @@ import (
 
 const PARAMETERS = constant.PREFIX_API + "/parameters"
 const PARAMETERS_PARAMETER = PARAMETERS + "/parameter/:" + constant.PARAMETER_ID
+const PARAMETERS_ALL = PARAMETERS + "/all"
 
 func SetParameterEndpoint(router *httprouter.Router, db *sql.DB, validate *validator.Validate) {
 	parameterController := getParameterController(db, validate)
 	router.POST(PARAMETERS, parameterController.Create)
 	router.PUT(PARAMETERS_PARAMETER, parameterController.Update)
 	router.GET(PARAMETERS_PARAMETER, parameterController.FindById)
-	router.GET(PARAMETERS, parameterController.FindAll)
+	router.GET(PARAMETERS_ALL, parameterController.FindAll)
 }
 
 func getParameterController(db *sql.DB, validate *validator.Validate) controller.ParameterController {

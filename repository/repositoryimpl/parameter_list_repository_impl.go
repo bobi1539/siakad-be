@@ -90,7 +90,7 @@ func sqlSearchParameterList(parameterListSearch search.ParameterListSearch) (str
 	if len(parameterListSearch.Search) != 0 {
 		sqlQuery += "AND LOWER(name) LIKE ? "
 		searchLike := helper.StringQueryLike(parameterListSearch.Search)
-		args = append(args, searchLike, searchLike)
+		args = append(args, searchLike)
 	}
 
 	sqlQuery += "ORDER BY id ASC"

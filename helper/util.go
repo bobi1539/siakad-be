@@ -25,3 +25,9 @@ func StringToInt(value string) int {
 	PanicIfError(err)
 	return intValue
 }
+
+func StringToInt64(value string) int64 {
+	intValue, err := strconv.ParseInt(value, 10, 64)
+	PanicIfError(err)
+	return intValue
+}

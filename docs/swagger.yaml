@@ -1,5 +1,14 @@
 basePath: /api
 definitions:
+  request.ParameterListRequest:
+    properties:
+      name:
+        maxLength: 255
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
   request.ParameterRequest:
     properties:
       description:
@@ -13,6 +22,13 @@ definitions:
     required:
     - description
     - name
+    type: object
+  response.ParameterListResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
     type: object
   response.ParameterResponse:
     properties:
@@ -41,7 +57,40 @@ info:
   title: SIAKAD API
   version: "1.0"
 paths:
-  /parameters:
+  /parameter-lists:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ParameterListRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.ParameterListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      tags:
+      - Parameter List
+  /parameter-lists/all:
     get:
       consumes:
       - application/json
@@ -50,6 +99,11 @@ paths:
         in: query
         name: search
         type: string
+      - description: Parameter ID
+        in: query
+        name: parameterId
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -61,7 +115,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/response.ParameterResponse'
+                    $ref: '#/definitions/response.ParameterListResponse'
                   type: array
               type: object
         "400":
@@ -73,7 +127,77 @@ paths:
           schema:
             $ref: '#/definitions/response.WebResponse'
       tags:
-      - Parameter
+      - Parameter List
+  /parameter-lists/parameter-list/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.ParameterListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      tags:
+      - Parameter List
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.ParameterListRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.WebResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.ParameterListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      tags:
+      - Parameter List
+  /parameters:
     post:
       consumes:
       - application/json
@@ -95,6 +219,39 @@ paths:
             - properties:
                 data:
                   $ref: '#/definitions/response.ParameterResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.WebResponse'
+      tags:
+      - Parameter
+  /parameters/all:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Search
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.WebResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/response.ParameterResponse'
+                  type: array
               type: object
         "400":
           description: Bad Request

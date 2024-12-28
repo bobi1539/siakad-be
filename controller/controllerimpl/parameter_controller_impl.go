@@ -77,7 +77,7 @@ func (parameterController *ParameterControllerImpl) FindById(writer http.Respons
 // @Success	200	{object}	response.WebResponse{data=[]response.ParameterResponse}
 // @Failure	400	{object}	response.WebResponse
 // @Failure	500	{object}	response.WebResponse
-// @Router	/parameters [get]
+// @Router	/parameters/all [get]
 func (parameterController *ParameterControllerImpl) FindAll(writer http.ResponseWriter, httpRequest *http.Request, params httprouter.Params) {
 	generalSearch := search.GeneralSearch{
 		Search:   helper.GetQueryParam(httpRequest, constant.SEARCH),

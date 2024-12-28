@@ -23,7 +23,7 @@ import (
 //	@license.name	Apache 2.0
 //	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
 
-//	@BasePath	/api
+// @BasePath	/api
 func main() {
 	db := app.NewDB()
 	validate := validator.New()
@@ -31,6 +31,7 @@ func main() {
 
 	endpoint.SetSwaggerEndpoint(router)
 	endpoint.SetParameterEndpoint(router, db, validate)
+	endpoint.SetParameterListEndpoint(router, db, validate)
 	router.PanicHandler = exception.ErrorHandler
 
 	log := helper.GetLogger()
