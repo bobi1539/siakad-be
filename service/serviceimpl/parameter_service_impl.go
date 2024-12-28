@@ -36,12 +36,11 @@ func (parameterService *ParameterServiceImpl) Create(ctx context.Context, parame
 	tx := service.BeginTransaction(parameterService.DB)
 	defer helper.CommitOrRollback(tx)
 
+	repoCtx := dto.BuildRepoCtx(ctx, tx)
 	parameter := domain.Parameter{
 		Name:        parameterRequest.Name,
 		Description: parameterRequest.Description,
 	}
-
-	repoCtx := dto.BuildRepoCtx(ctx, tx)
 	parameter = parameterService.ParameterRepository.Save(repoCtx, parameter)
 	return response.ToParameterResponse(parameter)
 }
