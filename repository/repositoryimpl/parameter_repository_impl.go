@@ -20,7 +20,7 @@ func NewParameterRepository() repository.ParameterRepository {
 }
 
 func (parameterRepository *ParameterRepositoryImpl) Save(repoCtx dto.RepositoryContext, parameter domain.Parameter) domain.Parameter {
-	result, err := repoCtx.Tx.ExecContext(repoCtx.Ctx, sqlSave(), parameter.Name, parameter.Description)
+	result, err := repoCtx.Tx.ExecContext(repoCtx.Ctx, sqlSaveParameter(), parameter.Name, parameter.Description)
 	helper.PanicIfError(err)
 
 	id, err := result.LastInsertId()
@@ -31,14 +31,14 @@ func (parameterRepository *ParameterRepositoryImpl) Save(repoCtx dto.RepositoryC
 }
 
 func (parameterRepository *ParameterRepositoryImpl) Update(repoCtx dto.RepositoryContext, parameter domain.Parameter) domain.Parameter {
-	_, err := repoCtx.Tx.ExecContext(repoCtx.Ctx, sqlUpdate(), parameter.Name, parameter.Description, parameter.Id)
+	_, err := repoCtx.Tx.ExecContext(repoCtx.Ctx, sqlUpdateParameter(), parameter.Name, parameter.Description, parameter.Id)
 	helper.PanicIfError(err)
 
 	return parameter
 }
 
 func (parameterRepository *ParameterRepositoryImpl) FindById(repoCtx dto.RepositoryContext, id int64) (domain.Parameter, error) {
-	sqlQuery := fmt.Sprintf("%s AND id = ?", sqlSelect())
+	sqlQuery := fmt.Sprintf("%s AND id = ?", sqlSelectParameter())
 	rows := repository.FetchRows(repoCtx, sqlQuery, id)
 	defer rows.Close()
 
@@ -53,11 +53,8 @@ func (parameterRepository *ParameterRepositoryImpl) FindById(repoCtx dto.Reposit
 }
 
 func (parameterRepository *ParameterRepositoryImpl) FindAll(repoCtx dto.RepositoryContext, generalSearch search.GeneralSearch) []domain.Parameter {
-	sqlSearch, args := sqlSearch(generalSearch.Search)
-	sqlQuery := sqlSelect() + sqlSearch
-
-	fmt.Println("sql query : ", sqlQuery)
-	fmt.Println("args : ", args)
+	sqlSearch, args := sqlSearchParameter(generalSearch.Search)
+	sqlQuery := sqlSelectParameter() + sqlSearch
 
 	rows := repository.FetchRows(repoCtx, sqlQuery, args...)
 	defer rows.Close()
@@ -65,7 +62,7 @@ func (parameterRepository *ParameterRepositoryImpl) FindAll(repoCtx dto.Reposito
 	return getParameters(rows)
 }
 
-func sqlSave() string {
+func sqlSaveParameter() string {
 	return "INSERT INTO m_parameter(" +
 		"name, " +
 		"description " +
@@ -73,14 +70,14 @@ func sqlSave() string {
 		"VALUES (?,?)"
 }
 
-func sqlUpdate() string {
+func sqlUpdateParameter() string {
 	return "UPDATE m_parameter SET " +
 		"name = ?, " +
 		"description = ? " +
 		"WHERE id = ?"
 }
 
-func sqlSelect() string {
+func sqlSelectParameter() string {
 	return "SELECT " +
 		"id, " +
 		"name, " +
@@ -89,7 +86,7 @@ func sqlSelect() string {
 		"WHERE 1 = 1 "
 }
 
-func sqlSearch(search string) (string, []any) {
+func sqlSearchParameter(search string) (string, []any) {
 	var args []any
 	sqlQuery := ""
 
